@@ -5,53 +5,95 @@ const Navbar = () => {
   const { user, logout } = useAuth();
 
   return (
-    <nav
-      style={{
-        padding: "15px",
-        borderBottom: "1px solid #ddd",
-        display: "flex",
-        justifyContent: "space-between",
-      }}
-    >
-      <div>
-        <Link to="/" style={{ marginRight: "20px" }}>
+    <nav className="navbar">
+
+      <div className="navbar-left">
+
+        <Link
+          to="/"
+          className="navbar-brand"
+        >
           VehicleRent
         </Link>
 
-        <Link to="/" style={{ marginRight: "20px" }}>
+        <Link
+          to="/"
+          className="navbar-link"
+        >
           Vehicles
         </Link>
 
         {user && (
-          <Link to="/my-bookings">
+          <Link
+            to="/my-bookings"
+            className="navbar-link"
+          >
             My Bookings
           </Link>
         )}
+
+        {user?.role === "admin" && (
+          <>
+            <Link
+              to="/admin"
+              className="navbar-link"
+            >
+              Admin Dashboard
+            </Link>
+
+            <Link
+              to="/admin/vehicles"
+              className="navbar-link"
+            >
+              Manage Vehicles
+            </Link>
+
+            <Link
+              to="/admin/bookings"
+              className="navbar-link"
+            >
+              Manage Bookings
+            </Link>
+          </>
+        )}
+
       </div>
 
-      <div>
+      <div className="navbar-right">
+
         {user ? (
           <>
-            <span style={{ marginRight: "15px" }}>
+            <span className="navbar-user">
               Hello, {user.name}
             </span>
 
-            <button onClick={logout}>
+            <button
+              className="logout-button"
+              onClick={logout}
+            >
               Logout
             </button>
           </>
         ) : (
           <>
-            <Link to="/login" style={{ marginRight: "15px" }}>
+            <Link
+              to="/login"
+              className="navbar-link"
+            >
               Login
             </Link>
 
-            <Link to="/register">
+            <Link
+              to="/register"
+              className="navbar-link"
+            >
               Register
             </Link>
           </>
         )}
+
       </div>
+
     </nav>
   );
 };

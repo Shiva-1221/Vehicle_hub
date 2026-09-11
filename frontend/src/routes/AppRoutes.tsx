@@ -24,7 +24,6 @@ import AdminBookings from "../pages/admin/AdminBookings";
 const AppRoutes = () => {
   return (
     <BrowserRouter>
-      {/* Navbar appears on all pages */}
       <Navbar />
 
       <Routes>
@@ -32,31 +31,26 @@ const AppRoutes = () => {
             USER ROUTES
             ================================ */}
 
-        {/* Home / Vehicle List */}
         <Route
           path="/"
           element={<VehicleList />}
         />
 
-        {/* Login */}
         <Route
           path="/login"
           element={<Login />}
         />
 
-        {/* Register */}
         <Route
           path="/register"
           element={<Register />}
         />
 
-        {/* Vehicle Details */}
         <Route
           path="/vehicles/:id"
           element={<VehicleDetails />}
         />
 
-        {/* My Bookings */}
         <Route
           path="/my-bookings"
           element={<MyBookings />}
@@ -67,25 +61,21 @@ const AppRoutes = () => {
             ================================ */}
 
         <Route element={<AdminRoute />}>
-          {/* Admin Dashboard */}
           <Route
             path="/admin"
             element={<AdminDashboard />}
           />
 
-          {/* Admin Vehicle List */}
           <Route
             path="/admin/vehicles"
             element={<AdminVehicles />}
           />
 
-          {/* Add Vehicle */}
           <Route
             path="/admin/vehicles/add"
             element={<AddVehicle />}
           />
 
-          {/* Admin Bookings */}
           <Route
             path="/admin/bookings"
             element={<AdminBookings />}

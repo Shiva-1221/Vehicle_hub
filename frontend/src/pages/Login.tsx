@@ -11,7 +11,6 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [error, setError] = useState("");
 
   const handleSubmit = async (
@@ -27,9 +26,17 @@ const Login = () => {
         password,
       });
 
+      // Save login information
       login(data.token, data.user);
 
-      navigate("/");
+      // Redirect based on user role
+      const userRole = (data.user as { role?: string }).role;
+
+      if (userRole === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (error: any) {
       setError(
         error.response?.data?.message ||
@@ -66,9 +73,7 @@ const Login = () => {
           <input
             type="password"
             value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
@@ -82,7 +87,9 @@ const Login = () => {
 
       <p>
         Don't have an account?{" "}
-        <Link to="/register">Register</Link>
+        <Link to="/register">
+          Register
+        </Link>
       </p>
     </div>
   );

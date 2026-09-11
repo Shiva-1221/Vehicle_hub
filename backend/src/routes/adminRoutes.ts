@@ -4,12 +4,14 @@ import protect from "../middleware/authMiddleware";
 import adminOnly from "../middleware/adminMiddleware";
 import upload from "../middleware/uploadMiddleware";
 
+// Vehicle controllers
 import {
   createVehicle,
   updateVehicle,
   deleteVehicle,
 } from "../controllers/vehicleController";
 
+// Booking controllers
 import {
   approveBooking,
   rejectBooking,
@@ -17,11 +19,27 @@ import {
   completeBooking,
 } from "../controllers/bookingController";
 
+// Admin controllers
 import {
+  getDashboard,
   getAllBookings,
 } from "../controllers/adminController";
 
 const router = Router();
+
+/*
+========================================
+ADMIN DASHBOARD ROUTE
+========================================
+*/
+
+// Get dashboard statistics
+router.get(
+  "/dashboard",
+  protect,
+  adminOnly,
+  getDashboard
+);
 
 /*
 ========================================

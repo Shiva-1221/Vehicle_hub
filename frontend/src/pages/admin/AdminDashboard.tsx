@@ -1,95 +1,122 @@
 import { useEffect, useState } from "react";
 
-import {
-  getDashboard,
-} from "../../services/adminApi";
+import { getDashboard } from "../../services/adminApi";
 
 interface DashboardStats {
   totalCustomers: number;
   totalVehicles: number;
   activeRentals: number;
+  totalBookings: number;
   pendingBookings: number;
   approvedBookings: number;
   completedBookings: number;
   cancelledBookings: number;
-  totalBookings: number;
   totalRevenue: number;
 }
 
 const AdminDashboard = () => {
   const [stats, setStats] =
-    useState<DashboardStats | null>(
-      null
-    );
+    useState<DashboardStats | null>(null);
+
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const loadDashboard =
-      async () => {
-        try {
-          const data =
-            await getDashboard();
+    const loadDashboard = async () => {
+      try {
+        setError("");
 
-          setStats(data);
-        } catch (error) {
-          console.error(error);
-        }
-      };
+        const data = await getDashboard();
+
+        setStats(data);
+      } catch (error: any) {
+        console.error(error);
+
+        setError(
+          error.response?.data?.message ||
+            "Failed to load dashboard"
+        );
+      }
+    };
 
     loadDashboard();
   }, []);
 
-  if (!stats) {
-    return <h2>Loading...</h2>;
+  // Show error
+  if (error) {
+    return (
+      <div style={{ padding: "30px" }}>
+        <h2>{error}</h2>
+      </div>
+    );
   }
 
+  // Show loading
+  if (!stats) {
+    return (
+      <div style={{ padding: "30px" }}>
+        <h2>Loading dashboard...</h2>
+      </div>
+    );
+  }
+
+  // Show dashboard
   return (
     <div style={{ padding: "30px" }}>
       <h1>Admin Dashboard</h1>
 
-      <p>
-        Customers:{" "}
-        {stats.totalCustomers}
-      </p>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "20px",
+          marginTop: "30px",
+        }}
+      >
+        <div>
+          <h3>Total Customers</h3>
+          <p>{stats.totalCustomers}</p>
+        </div>
 
-      <p>
-        Vehicles:{" "}
-        {stats.totalVehicles}
-      </p>
+        <div>
+          <h3>Total Vehicles</h3>
+          <p>{stats.totalVehicles}</p>
+        </div>
 
-      <p>
-        Active Rentals:{" "}
-        {stats.activeRentals}
-      </p>
+        <div>
+          <h3>Active Rentals</h3>
+          <p>{stats.activeRentals}</p>
+        </div>
 
-      <p>
-        Total Bookings:{" "}
-        {stats.totalBookings}
-      </p>
+        <div>
+          <h3>Total Bookings</h3>
+          <p>{stats.totalBookings}</p>
+        </div>
 
-      <p>
-        Pending:{" "}
-        {stats.pendingBookings}
-      </p>
+        <div>
+          <h3>Pending</h3>
+          <p>{stats.pendingBookings}</p>
+        </div>
 
-      <p>
-        Approved:{" "}
-        {stats.approvedBookings}
-      </p>
+        <div>
+          <h3>Approved</h3>
+          <p>{stats.approvedBookings}</p>
+        </div>
 
-      <p>
-        Completed:{" "}
-        {stats.completedBookings}
-      </p>
+        <div>
+          <h3>Completed</h3>
+          <p>{stats.completedBookings}</p>
+        </div>
 
-      <p>
-        Cancelled:{" "}
-        {stats.cancelledBookings}
-      </p>
+        <div>
+          <h3>Cancelled</h3>
+          <p>{stats.cancelledBookings}</p>
+        </div>
 
-      <p>
-        Revenue: ₹
-        {stats.totalRevenue}
-      </p>
+        <div>
+          <h3>Total Revenue</h3>
+          <p>₹{stats.totalRevenue}</p>
+        </div>
+      </div>
     </div>
   );
 };

@@ -35,11 +35,6 @@ const vehicleSchema = new Schema<IVehicle>(
       trim: true,
     },
 
-    category: {
-  type: String,
-  required: true,
-    },
-
     vehicleModel: {
       type: String,
       required: true,
@@ -49,6 +44,13 @@ const vehicleSchema = new Schema<IVehicle>(
     type: {
       type: String,
       required: true,
+      trim: true,
+    },
+
+    category: {
+      type: String,
+      required: true,
+      trim: true,
     },
 
     pricePerDay: {
@@ -57,18 +59,32 @@ const vehicleSchema = new Schema<IVehicle>(
       min: 0,
     },
 
-    fuelType: String,
+    fuelType: {
+      type: String,
+      trim: true,
+    },
 
-    transmission: String,
+    transmission: {
+      type: String,
+      trim: true,
+    },
 
-    seatingCapacity: Number,
+    seatingCapacity: {
+      type: Number,
+      min: 1,
+    },
 
-    location: String,
+    location: {
+      type: String,
+      trim: true,
+    },
 
+    // Registration number must be unique
     registrationNumber: {
       type: String,
       required: true,
       unique: true,
+      trim: true,
     },
 
     images: {
@@ -76,7 +92,10 @@ const vehicleSchema = new Schema<IVehicle>(
       default: [],
     },
 
-    description: String,
+    description: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,

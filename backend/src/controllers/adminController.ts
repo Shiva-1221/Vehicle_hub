@@ -8,7 +8,7 @@ import {
 
 /*
 ========================================
-GET ALL BOOKINGS
+GET ALL BOOKINGS - ADMIN
 ========================================
 */
 
@@ -25,6 +25,10 @@ export const getAllBookings = async (
       date,
     } = req.query;
 
+    // ========================================
+    // FILTER
+    // ========================================
+
     const filter: Record<
       string,
       unknown
@@ -32,42 +36,56 @@ export const getAllBookings = async (
 
     // Search by booking number
     if (
-      typeof bookingNumber === "string"
+      typeof bookingNumber === "string" &&
+      bookingNumber.trim() !== ""
     ) {
       filter.bookingNumber = {
-        $regex: bookingNumber,
+        $regex: bookingNumber.trim(),
         $options: "i",
       };
     }
 
     // Filter by status
     if (
-      typeof status === "string"
+      typeof status === "string" &&
+      status.trim() !== ""
     ) {
       filter.status = status;
     }
 
     // Filter by user
     if (
-      typeof userId === "string"
+      typeof userId === "string" &&
+      userId.trim() !== ""
     ) {
       filter.userId = userId;
     }
 
     // Filter by vehicle
     if (
-      typeof vehicleId === "string"
+      typeof vehicleId === "string" &&
+      vehicleId.trim() !== ""
     ) {
       filter.vehicleId = vehicleId;
     }
 
     // Filter by pickup date
     if (
-      typeof date === "string"
+      typeof date === "string" &&
+      date.trim() !== ""
     ) {
       const start = new Date(date);
-
       const end = new Date(date);
+
+      if (
+        Number.isNaN(start.getTime())
+      ) {
+        res.status(400).json({
+          message: "Invalid date",
+        });
+
+        return;
+      }
 
       end.setDate(
         end.getDate() + 1
@@ -79,24 +97,77 @@ export const getAllBookings = async (
       };
     }
 
-    // Get bookings
-    const bookings =
-      await Booking.find(filter)
-        .populate(
-          "userId",
-          "name email"
-        )
-        .populate(
-          "vehicleId",
-          "name brand vehicleModel"
-        )
-        .sort({
-          createdAt: -1,
-        });
+    // ========================================
+    // PAGINATION
+    // ========================================
+
+    const pageNumber = Math.max(
+      1,
+      Number(req.query.page) || 1
+    );
+
+    const limitNumber = Math.min(
+      50,
+      Math.max(
+        1,
+        Number(req.query.limit) || 10
+      )
+    );
+
+    const skip =
+      (pageNumber - 1) *
+      limitNumber;
+
+    // ========================================
+    // GET BOOKINGS + TOTAL COUNT
+    // ========================================
+
+    const [bookings, total] =
+      await Promise.all([
+        Booking.find(filter)
+          .populate(
+            "userId",
+            "name email"
+          )
+          .populate(
+            "vehicleId",
+            "name brand vehicleModel"
+          )
+          .sort({
+            createdAt: -1,
+          })
+          .skip(skip)
+          .limit(limitNumber),
+
+        Booking.countDocuments(filter),
+      ]);
+
+    // ========================================
+    // PAGINATION INFORMATION
+    // ========================================
+
+    const totalPages = Math.ceil(
+      total / limitNumber
+    );
+
+    // ========================================
+    // RESPONSE
+    // ========================================
 
     res.status(200).json({
       count: bookings.length,
       bookings,
+
+      pagination: {
+        page: pageNumber,
+        limit: limitNumber,
+        total,
+        totalPages,
+        hasNextPage:
+          pageNumber < totalPages,
+        hasPreviousPage:
+          pageNumber > 1,
+      },
     });
   } catch (error) {
     console.error(
